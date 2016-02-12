@@ -369,6 +369,15 @@ namespace Ambilight
                 }
             }
         }
+        private void sendAllBlack()
+        {
+            packageData[0] = Convert.ToByte('a');
+            for (int i = 0; i < config.numberOfLeds * 3; i++)
+            {
+                packageData[i + 1] = Convert.ToByte(0);
+            }
+            readyToSendData = true;
+        }
         #endregion
 
         #region Video code
@@ -503,12 +512,7 @@ namespace Ambilight
             //Send all black to the strip
             if (config.turnOffWhenClosed == true)
             {
-                packageData[0] = Convert.ToByte('a');
-                for (int i = 0; i < config.numberOfLeds * 3; i++)
-                {
-                    packageData[i + 1] = Convert.ToByte(0);
-                }
-                readyToSendData = true;
+                sendAllBlack();
             }
 
             while (readyToSendData == true)

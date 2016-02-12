@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <root>
   <Settings>
     <Port>COM9</Port>
@@ -10,12 +10,12 @@
     <PixelPerY>33</PixelPerY>
     <Brightness>100</Brightness>
     <Extant>0</Extant>
-    <LinearCapture>False</LinearCapture>
-    <TurnOffWhenClosed>True</TurnOffWhenClosed>
+    <LinearCapture>false</LinearCapture>
+    <TurnOffWhenClosed>true</TurnOffWhenClosed>
     <Mode>color</Mode>
-    <Red>100</Red>
-    <Green>100</Green>
-    <Blue>50</Blue>
-    <Running>True</Running>
+    <Red>150</Red>
+    <Green>150</Green>
+    <Blue>100</Blue>
+    <Running>true</Running>
   </Settings>
 </root>
