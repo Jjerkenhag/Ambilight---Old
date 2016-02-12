@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<root>
+  <Settings>
+    <Port>COM9</Port>
+    <Baud>115200</Baud>
+    <Leds>30</Leds>
+    <Offset>0</Offset>
+    <Height>3</Height>
+    <PixelPerX>33</PixelPerX>
+    <PixelPerY>33</PixelPerY>
+    <Brightness>100</Brightness>
+    <Extant>0</Extant>
+    <LinearCapture>false</LinearCapture>
+    <TurnOffWhenClosed>true</TurnOffWhenClosed>
+    <Mode>color</Mode>
+    <Red>150</Red>
+    <Green>150</Green>
+    <Blue>100</Blue>
+    <Running>true</Running>
+  </Settings>
+</root>
