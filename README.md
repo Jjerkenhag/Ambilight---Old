@@ -16,7 +16,6 @@ no extant
 This gives ~60 updates per second and use ~7% of the CPU.
 
 TODO:
-- Send all black on stop
 - Implement audio mode
 - Add brightness to video
 - Add extant to video
