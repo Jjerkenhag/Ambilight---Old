@@ -29,6 +29,7 @@ namespace Ambilight
 
         byte[] packageData = new byte[256]; //3 * LEDs + 1 (256 just to make room for 85 + 'a')
         bool readyToSendData = false;
+        bool paused = false; //This is used to let the data sender run one last time
         int placeAt = 0;
 
         bool formOpen = true;
@@ -223,13 +224,16 @@ namespace Ambilight
         {
             if (config.running == true)
             {
-                sendAllBlack();
+                paused = true;
+                lastRed--;
                 config.running = false;
                 startStopToolStripMenuItem.Text = "Start";
                 startStopToolStripMenuIconItem.Text = "Start";
             }
             else
             {
+                paused = false;
+                lastRed--;
                 config.running = true;
                 startStopToolStripMenuItem.Text = "Stop";
                 startStopToolStripMenuIconItem.Text = "Stop";
@@ -264,12 +268,16 @@ namespace Ambilight
         {
             if (config.running == true)
             {
+                paused = true;
+                lastRed--;
                 config.running = false;
                 startStopToolStripMenuItem.Text = "Start";
                 startStopToolStripMenuIconItem.Text = "Start";
             }
             else
             {
+                paused = false;
+                lastRed--;
                 config.running = true;
                 startStopToolStripMenuItem.Text = "Stop";
                 startStopToolStripMenuIconItem.Text = "Stop";
@@ -295,6 +303,10 @@ namespace Ambilight
                 {
                     if (port.IsOpen && readyToSendData)
                     {
+                        if (paused)
+                        {
+                            sendAllBlack();
+                        }
                         port.Write(packageData, 0, (config.numberOfLeds * 3 + 1));
                         readyToSendData = false;
                         loop++;
@@ -331,7 +343,7 @@ namespace Ambilight
                 }
                 else
                 {
-                    if (config.currentMode == Settings.mode.color && config.running == true)
+                    if (config.currentMode == Settings.mode.color && config.running == true && paused == false)
                     {
                         System.Threading.Thread.Sleep(100);
 
