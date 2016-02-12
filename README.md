@@ -8,15 +8,14 @@ In my opinion everything above 30 updates per second is close to non-noticeable 
 However, a jump from 25 -> 33 pixels per LED give almost double the update time but most commonly no apparent change in color.
 
 My preffered configuration:
-25x25 pixel gathering
-1/3 of screen
-non-linear
-no extant
-100 brightness
-This gives ~60 updates per second and use ~7% of the CPU.
+- 25x25 pixel gathering
+- 1/3 of screen
+- non-linear
+- no extant
+- 100 brightness
+- This gives ~60 updates per second and use ~7% of the CPU.
 
 TODO:
-- Send all black on stop
 - Implement audio mode
 - Add brightness to video
 - Add extant to video
