@@ -223,6 +223,7 @@ namespace Ambilight
         {
             if (config.running == true)
             {
+                sendAllBlack();
                 config.running = false;
                 startStopToolStripMenuItem.Text = "Start";
                 startStopToolStripMenuIconItem.Text = "Start";
@@ -233,10 +234,6 @@ namespace Ambilight
                 startStopToolStripMenuItem.Text = "Stop";
                 startStopToolStripMenuIconItem.Text = "Stop";
             }
-        }
-        private void exitToolStripMenuItem_Click_1(object sender, EventArgs e)
-        {
-            exitApplication();
         }
         #endregion
 
@@ -296,7 +293,7 @@ namespace Ambilight
                 }
                 else
                 {
-                    if (port.IsOpen && readyToSendData && config.running)
+                    if (port.IsOpen && readyToSendData)
                     {
                         port.Write(packageData, 0, (config.numberOfLeds * 3 + 1));
                         readyToSendData = false;
