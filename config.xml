@@ -1,21 +1,52 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <root>
   <Settings>
-    <Port>COM9</Port> <!-- The port of which the Arduino has its input, the program won't start if this is wrong -->
-    <Baud>115200</Baud> <!-- The baud rate of which the Arduino is set, this can be changed in the Arduino code -->
-    <Leds>30</Leds> <!-- The amount of LEDs connected to the Arduino, this must be same(or more) as in the Arduino code-->
-    <Offset>0</Offset> <!-- The offset in pixels from the top -->
-    <Height>3</Height> <!-- 1/X where this number will represent X as in the portion of the screen to capture in height -->
-    <PixelPerX>25</PixelPerX> <!-- The amount of pixels to sample for each LED in width -->
-    <PixelPerY>25</PixelPerY> <!-- The amount of pixels to sample for each LED in height -->
-    <Brightness>100</Brightness> <!-- The color brightness in percent -->
-    <Extant>0</Extant> <!-- How much, in percent, is passed over to the next color -->
-    <LinearCapture>false</LinearCapture> <!-- For video, should the color be gathered with linear worth(higher up on the screen = more influence) -->
-    <TurnOffWhenClosed>true</TurnOffWhenClosed> <!-- Send all black to the Arduino on shut down -->
-    <Mode>video</Mode> <!-- Which mode to start in, will be same mode as when you last quit -->
-    <Red>50</Red> <!-- For color, how much red -->
-    <Green>50</Green> <!-- For color, how much green -->
-    <Blue>10</Blue> <!-- For color, how much blue -->
-    <Running>true</Running> <!-- Is the program running -->
+    <Port>COM9</Port>
+    <!-- The port of which the Arduino has its input, the program won't start if this is wrong -->
+    
+    <Baud>115200</Baud>
+    <!-- The baud rate of which the Arduino is set, this can be changed in the Arduino code -->
+    
+    <Leds>30</Leds>
+    <!-- The amount of LEDs connected to the Arduino, this must be same(or more) as in the Arduino code-->
+    
+    <Offset>0</Offset>
+    <!-- The offset in pixels from the top -->
+    
+    <Height>3</Height>
+    <!-- 1/X where this number will represent X as in the portion of the screen to capture in height -->
+    
+    <PixelPerX>25</PixelPerX>
+    <!-- The amount of pixels to sample for each LED in width -->
+    
+    <PixelPerY>25</PixelPerY> 
+    <!-- The amount of pixels to sample for each LED in height -->
+    
+    <Brightness>100</Brightness>
+    <!-- The color brightness in percent -->
+    
+    <Extant>0</Extant>
+    <!-- How much, in percent, is passed over to the next color -->
+    
+    <LinearCapture>false</LinearCapture>
+    <!-- For video, should the color be gathered with linear worth(higher up on the screen = more influence) -->
+    
+    <TurnOffWhenClosed>true</TurnOffWhenClosed>
+    <!-- Send all black to the Arduino on shut down -->
+    
+    <Mode>video</Mode>
+    <!-- Which mode to start in, will be same mode as when you last quit -->
+    
+    <Red>50</Red>
+    <!-- For color, how much red -->
+    
+    <Green>50</Green> 
+    <!-- For color, how much green -->
+    
+    <Blue>10</Blue>
+    <!-- For color, how much blue -->
+    
+    <Running>true</Running>
+    <!-- Is the program running -->
   </Settings>
 </root>
