@@ -17,5 +17,5 @@ My preffered configuration:
 
 TODO:
 - Implement audio mode
-- Add brightness to video
+- Implement ambient mode (soft color change etc.)
 - Add extant to video
