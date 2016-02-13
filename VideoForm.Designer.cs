@@ -43,6 +43,9 @@
             this.buttonAddPxlY = new System.Windows.Forms.Button();
             this.labelPixelPerX = new System.Windows.Forms.Label();
             this.labelPixelPerY = new System.Windows.Forms.Label();
+            this.labelBrightness = new System.Windows.Forms.Label();
+            this.buttonRemoveBrightness = new System.Windows.Forms.Button();
+            this.buttonAddBrightness = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // buttonFindOffset
@@ -219,6 +222,41 @@
             this.labelPixelPerY.TabIndex = 14;
             this.labelPixelPerY.Text = "Pixels Y/LED: 10";
             // 
+            // labelBrightness
+            // 
+            this.labelBrightness.AutoSize = true;
+            this.labelBrightness.Font = new System.Drawing.Font("Comic Sans MS", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelBrightness.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.labelBrightness.Location = new System.Drawing.Point(2, 232);
+            this.labelBrightness.Name = "labelBrightness";
+            this.labelBrightness.Size = new System.Drawing.Size(163, 29);
+            this.labelBrightness.TabIndex = 17;
+            this.labelBrightness.Text = "Brightness: 100";
+            // 
+            // buttonRemoveBrightness
+            // 
+            this.buttonRemoveBrightness.BackColor = System.Drawing.Color.Azure;
+            this.buttonRemoveBrightness.Font = new System.Drawing.Font("Comic Sans MS", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonRemoveBrightness.Location = new System.Drawing.Point(238, 226);
+            this.buttonRemoveBrightness.Name = "buttonRemoveBrightness";
+            this.buttonRemoveBrightness.Size = new System.Drawing.Size(40, 40);
+            this.buttonRemoveBrightness.TabIndex = 16;
+            this.buttonRemoveBrightness.Text = "-";
+            this.buttonRemoveBrightness.UseVisualStyleBackColor = false;
+            this.buttonRemoveBrightness.Click += new System.EventHandler(this.buttonRemoveBrightness_Click);
+            // 
+            // buttonAddBrightness
+            // 
+            this.buttonAddBrightness.BackColor = System.Drawing.Color.Azure;
+            this.buttonAddBrightness.Font = new System.Drawing.Font("Comic Sans MS", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonAddBrightness.Location = new System.Drawing.Point(194, 226);
+            this.buttonAddBrightness.Name = "buttonAddBrightness";
+            this.buttonAddBrightness.Size = new System.Drawing.Size(40, 40);
+            this.buttonAddBrightness.TabIndex = 15;
+            this.buttonAddBrightness.Text = "+";
+            this.buttonAddBrightness.UseVisualStyleBackColor = false;
+            this.buttonAddBrightness.Click += new System.EventHandler(this.buttonAddBrightness_Click);
+            // 
             // VideoForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(17F, 38F);
@@ -226,6 +264,9 @@
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.Color.MediumBlue;
             this.ClientSize = new System.Drawing.Size(280, 300);
+            this.Controls.Add(this.labelBrightness);
+            this.Controls.Add(this.buttonRemoveBrightness);
+            this.Controls.Add(this.buttonAddBrightness);
             this.Controls.Add(this.labelPixelPerY);
             this.Controls.Add(this.labelPixelPerX);
             this.Controls.Add(this.buttonRemovePxlY);
@@ -269,5 +310,8 @@
         private System.Windows.Forms.Button buttonAddPxlY;
         private System.Windows.Forms.Label labelPixelPerX;
         private System.Windows.Forms.Label labelPixelPerY;
+        private System.Windows.Forms.Label labelBrightness;
+        private System.Windows.Forms.Button buttonRemoveBrightness;
+        private System.Windows.Forms.Button buttonAddBrightness;
     }
 }

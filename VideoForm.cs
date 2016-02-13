@@ -188,5 +188,23 @@ namespace Ambilight
                 labelPixelPerY.Text = "Pixels Y/LED: " + con.pixelPerY;
             }
         }
+
+        private void buttonAddBrightness_Click(object sender, EventArgs e)
+        {
+            if (con.brightness < 200)
+            {
+                con.brightness += 10;
+                labelBrightness.Text = "Brightness: " + con.brightness;
+            }
+        }
+
+        private void buttonRemoveBrightness_Click(object sender, EventArgs e)
+        {
+            if (con.brightness > 0)
+            {
+                con.brightness -= 10;
+                labelBrightness.Text = "Brightness: " + con.brightness;
+            }
+        }
     }
 }

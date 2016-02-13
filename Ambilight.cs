@@ -24,27 +24,28 @@ namespace Ambilight
         ColorForm colorForm;
 
         //UPS : Updates Per Second
-        DateTime lastTime = DateTime.Now;
-        int loop = 0;
+        DateTime lastTime = DateTime.Now; //Time since last update of label
+        int loop = 0; //Number of updates last second
 
         byte[] packageData = new byte[256]; //3 * LEDs + 1 (256 just to make room for 85 + 'a')
         bool readyToSendData = false;
         bool paused = false; //This is used to let the data sender run one last time
-        int placeAt = 0;
+        int placeAt = 0; //To keep track of where to put the data
 
-        bool formOpen = true;
+        bool formOpen = true; //Keeping track if form is minimized or open
 
         //For the color data and calculations
         Color sendColor = new Color();
-        int red, green, blue, counter; //This if for calculating the average color.
+        int red, green, blue, counter; //This if for calculating the average value.
 
-        int videoCaptureHeight = 1;
-        int videoCaptureWidth = Screen.PrimaryScreen.Bounds.Width;
-        int videoCaptureLEDWidth = 1;
+        int videoCaptureHeight = 1; //The height of which to capture video, this variable will be updated by itself
+        int videoCaptureWidth = Screen.PrimaryScreen.Bounds.Width; //The width of the area of which to capture video
+        int videoCaptureLEDWidth = 1; //The width of each LED, this too will update itself
+        int offsetFromLeft = 0; //The offset from the left side of your screen, good if your strip is shorter than the width of your screen
 
-        byte lastRed = 0, lastGreen = 0, lastBlue = 0;
+        byte lastRed = 0, lastGreen = 0, lastBlue = 0; //This is used for the update of the color mode
 
-        Form currentForm;
+        Form currentForm; //Keeps track on what window/form to show
 
         public Ambilight()
         {
@@ -56,26 +57,28 @@ namespace Ambilight
             //All the control windows
             videoForm = new VideoForm(config);
             colorForm = new ColorForm(config);
-            
+
             //Makes our life easier with the multithreading
             Control.CheckForIllegalCrossThreadCalls = false;
 
-            config.setDefaultConfiguration();
-            LoadConfig();
+            config.setDefaultConfiguration(); //Set configuration to default to avoid errors
+            LoadConfig(); //Load the configuration file
 
-            packageData = new byte[config.numberOfLeds * 3 + 1];
+            packageData = new byte[config.numberOfLeds * 3 + 1]; //Update the size of data
 
             port = new SerialPort(config.port, config.baud, Parity.None, 8, StopBits.One);
             try
             {
-                port.Open();
+                port.Open(); //Try to open the port
             }
             catch
             {
+                //If the open fails the program will quit and xml-file must be changed
                 MessageBox.Show("Could not open port, check config or arduino.");
                 exitApplication();
             }
 
+            //Start all the background workers
             backgroundWorkerDataSender.RunWorkerAsync();
             backgroundWorkerVideo.RunWorkerAsync();
             backgroundWorkerColor.RunWorkerAsync();
@@ -88,6 +91,7 @@ namespace Ambilight
 
             colorForm.BackColor = Color.FromArgb(config.redAmount, config.greenAmount, config.blueAmount);
 
+            //Open the form corresponding to the mode
             if (config.currentMode == Settings.mode.color)
             {
                 currentForm = colorForm;
@@ -101,7 +105,7 @@ namespace Ambilight
         }
         private void Ambilight_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (e.CloseReason == CloseReason.UserClosing)
+            if (e.CloseReason == CloseReason.UserClosing) //Is the close-button is pressed, this will run
             {
                 notifyIconAmbilight.BalloonTipTitle = "Minimized";
                 notifyIconAmbilight.BalloonTipText = "Ambilight is still running. Click to open.";
@@ -111,7 +115,7 @@ namespace Ambilight
                 minimizeToolStripMenuIconItem.Text = "Open";
                 e.Cancel = true;
             }
-            if (e.CloseReason == CloseReason.WindowsShutDown)
+            if (e.CloseReason == CloseReason.WindowsShutDown) //If windows is shutting down, this will be called
             {
                 exitApplication();
             }
@@ -127,6 +131,7 @@ namespace Ambilight
 
                 try
                 {
+                    //Read all the tags and its content and place in variables
                     foreach (XmlNode node in doc.DocumentElement)
                     {
                         string port = node["Port"].InnerText;
@@ -146,16 +151,19 @@ namespace Ambilight
                         byte blue = byte.Parse(node["Blue"].InnerText);
                         bool running = bool.Parse(node["Running"].InnerText);
 
+                        //Send these variables to the configuration
                         config.setConfiguration(port, baud, numberOfLeds, offset, height, pixelPerX, pixelPerY, brightness, extant, linearCapture, turnOffWhenClosed, currentMode, red, green, blue, running);
                     }
                 }
                 catch
                 {
+                    //If an error during reading is reached, the default settings will be set
                     config.setDefaultConfiguration();
                 }
             }
             catch
             {
+                //If an error during opening xml is reached, the default settings will be set and the application will exit
                 config.setDefaultConfiguration();
                 exitApplication();
             }
@@ -167,6 +175,7 @@ namespace Ambilight
                 XmlDocument doc = new XmlDocument();
                 doc.Load("config.xml");
 
+                //Set the xml to the current settings
                 foreach (XmlNode node in doc.DocumentElement)
                 {
                     node["Port"].InnerText = config.port.ToString();
@@ -187,10 +196,12 @@ namespace Ambilight
                     node["Running"].InnerText = config.running.ToString();
                 }
 
+                //Save the new settings
                 doc.Save("config.xml");
             }
             catch
             {
+                //Is something fails this will show
                 MessageBox.Show("Failed to save config.");
             }
         }
@@ -199,10 +210,13 @@ namespace Ambilight
         #region Menu
         private void videoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            currentForm.Hide();
-            videoForm.Show();
-            currentForm = videoForm;
-            config.currentMode = Settings.mode.video;
+            if (config.currentMode != Settings.mode.video) //If current mode is same, do nothing
+            {
+                currentForm.Hide(); //Hide the current form
+                videoForm.Show(); //Show new form
+                currentForm = videoForm; //Set currentForm to the new form
+                config.currentMode = Settings.mode.video; //Set current mode to new mode
+            }
         }
         private void audioToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -210,11 +224,14 @@ namespace Ambilight
         }
         private void colorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            currentForm.Hide();
-            colorForm.Show();
-            currentForm = colorForm;
-            lastRed--;
-            config.currentMode = Settings.mode.color;
+            if (config.currentMode != Settings.mode.color) //If current mode is same, do nothing
+            {
+                currentForm.Hide(); //Hide the current form
+                colorForm.Show(); //Show new form
+                currentForm = colorForm; //Set currentForm to the new form
+                lastRed--; //Change lastRed to force the color to update
+                config.currentMode = Settings.mode.color; //Set current mode to new mode
+            }
         }
         private void ambientToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -224,18 +241,18 @@ namespace Ambilight
         {
             if (config.running == true)
             {
-                paused = true;
+                paused = true; //This is used to let the data sender continue without the other workers interfering
                 lastRed--;
-                config.running = false;
-                startStopToolStripMenuItem.Text = "Start";
+                config.running = false; //Stop all the workers
+                startStopToolStripMenuItem.Text = "Start"; //Change the labels
                 startStopToolStripMenuIconItem.Text = "Start";
             }
             else
             {
                 paused = false;
                 lastRed--;
-                config.running = true;
-                startStopToolStripMenuItem.Text = "Stop";
+                config.running = true; //Start the workers
+                startStopToolStripMenuItem.Text = "Stop"; //Change the labels
                 startStopToolStripMenuIconItem.Text = "Stop";
             }
         }
@@ -296,6 +313,7 @@ namespace Ambilight
             {
                 if (backgroundWorkerDataSender.CancellationPending)
                 {
+                    //If cancellation is activated, this will run
                     e.Cancel = true;
                     return;
                 }
@@ -307,12 +325,13 @@ namespace Ambilight
                         {
                             sendAllBlack();
                         }
-                        port.Write(packageData, 0, (config.numberOfLeds * 3 + 1));
-                        readyToSendData = false;
-                        loop++;
+                        port.Write(packageData, 0, (config.numberOfLeds * 3 + 1)); //Send all the data
+                        readyToSendData = false; //Set ready to false
+                        loop++; //Add to the update speed
 
                         if ((DateTime.Now - lastTime).Seconds > 1)
                         {
+                            //Update the label when a second has passed and reset the counter
                             lastTime = DateTime.Now;
                             labelSenderSpeed.Text = loop.ToString();
                             loop = 0;
@@ -324,6 +343,7 @@ namespace Ambilight
                     }
                     else
                     {
+                        //A small add to save some CPU usage
                         System.Threading.Thread.Sleep(1);
                     }
                 }
@@ -338,6 +358,7 @@ namespace Ambilight
             {
                 if (backgroundWorkerColor.CancellationPending)
                 {
+                    //If cancellation is activated, this will run
                     e.Cancel = true;
                     return;
                 }
@@ -349,30 +370,34 @@ namespace Ambilight
 
                         if (lastRed != config.redAmount || lastGreen != config.greenAmount || lastBlue != config.blueAmount)
                         {
+                            //Update background color
                             colorForm.BackColor = Color.FromArgb(config.redAmount, config.greenAmount, config.blueAmount);
 
+                            //Update all color values
                             lastRed = config.redAmount;
                             lastGreen = config.greenAmount;
                             lastBlue = config.blueAmount;
 
                             if (readyToSendData == false)
                             {
-                                packageData[placeAt++] = Convert.ToByte('a');
+                                packageData[placeAt++] = Convert.ToByte('a'); //Place start byte
 
                                 for (int i = 0; i < config.numberOfLeds; i++)
                                 {
+                                    //Place all color values
                                     packageData[placeAt++] = lastRed;
                                     packageData[placeAt++] = lastGreen;
                                     packageData[placeAt++] = lastBlue;
                                 }
 
                                 placeAt = 0;
-                                readyToSendData = true;
+                                readyToSendData = true; //Set to true to activate data sender
                             }
                         }
                     }
                     else
                     {
+                        //If current mode is not color, this thread will sleep half a second
                         System.Threading.Thread.Sleep(500);
                     }
                 }
@@ -380,6 +405,7 @@ namespace Ambilight
         }
         private void sendAllBlack()
         {
+            //Set start byte and fill rest with black
             packageData[0] = Convert.ToByte('a');
             for (int i = 0; i < config.numberOfLeds * 3; i++)
             {
@@ -396,6 +422,7 @@ namespace Ambilight
             {
                 if (backgroundWorkerVideo.CancellationPending)
                 {
+                    //If cancellation is activated, this will run
                     e.Cancel = true;
                     return;
                 }
@@ -405,27 +432,30 @@ namespace Ambilight
                     {
                         if (readyToSendData == false)
                         {
-                            Bitmap bmpScreenshot = Screenshot();
-                            packageData[placeAt++] = Convert.ToByte('a');
+                            Bitmap bmpScreenshot = Screenshot(); //Take a picture of capture area
+                            packageData[placeAt++] = Convert.ToByte('a'); //Set starting byte
 
                             for (int i = 0; i < config.numberOfLeds; i++)
                             {
+                                //Use the chosen mode of color calculation
                                 if (config.linearCapture)
                                     findMeanColorLinear(i, bmpScreenshot);
                                 else
                                     findMeanColorEqual(i, bmpScreenshot);
 
-                                packageData[placeAt++] = Convert.ToByte(sendColor.R);
-                                packageData[placeAt++] = Convert.ToByte(sendColor.G);
-                                packageData[placeAt++] = Convert.ToByte(sendColor.B);
+                                //Add brightness to the value, convert to byte and add to the package
+                                packageData[placeAt++] = Convert.ToByte(addBrightness(sendColor.R));
+                                packageData[placeAt++] = Convert.ToByte(addBrightness(sendColor.G));
+                                packageData[placeAt++] = Convert.ToByte(addBrightness(sendColor.B));
                             }
 
                             placeAt = 0;
-                            readyToSendData = true;
+                            readyToSendData = true; //Set to true to activate data sender
                         }
                     }
                     else
                     {
+                        //If current mode is not color, this thread will sleep half a second
                         System.Threading.Thread.Sleep(500);
                     }
                 }
@@ -435,15 +465,13 @@ namespace Ambilight
         {
             videoCaptureHeight = Screen.PrimaryScreen.Bounds.Height / config.height; //To update the capture portion.
 
-            Bitmap bmpScreenshot = new Bitmap(videoCaptureWidth, videoCaptureHeight);
+            Bitmap bmpScreenshot = new Bitmap(videoCaptureWidth, videoCaptureHeight); //Create new bitmap with appropriate size
 
-            Graphics g = Graphics.FromImage(bmpScreenshot);
+            Graphics g = Graphics.FromImage(bmpScreenshot); //Create graphics from bitmap
 
-            Size s = this.Size;
-            s.Width = videoCaptureWidth;
-            s.Height = videoCaptureHeight;
+            Size s = new Size(videoCaptureWidth, videoCaptureHeight); //Set the size of capture area
 
-            g.CopyFromScreen(0, config.offset, 0, 0, s);
+            g.CopyFromScreen(offsetFromLeft, config.offset, 0, 0, s); //Take picture of screen and put into graphics
 
             return bmpScreenshot;
         }
@@ -456,11 +484,14 @@ namespace Ambilight
             blue = 0;
             counter = 0;
 
+            //Update the width of each LED in pixels
             videoCaptureLEDWidth = videoCaptureWidth / config.numberOfLeds;
 
+            //Calculate the space between each pixel in X and Y
             int JUMP_X = videoCaptureLEDWidth / config.pixelPerX;
             int JUMP_Y = videoCaptureHeight / config.pixelPerY;
 
+            //Cather the color values of pixels
             for (int i = 0; i < videoCaptureLEDWidth; i += JUMP_X)
             {
                 for (int j = 0; j < videoCaptureHeight; j += JUMP_Y)
@@ -475,6 +506,7 @@ namespace Ambilight
                 }
             }
 
+            //Assign the mean of those values
             sendColor = Color.FromArgb(red / counter, green / counter, blue / counter);
         }
         private void findMeanColorLinear(int forLed, Bitmap fromBmp)
@@ -486,11 +518,14 @@ namespace Ambilight
             blue = 0;
             counter = 0;
 
+            //Update the width of each LED in pixels
             videoCaptureLEDWidth = videoCaptureWidth / config.numberOfLeds;
 
+            //Calculate the space between each pixel in X and Y
             int JUMP_X = videoCaptureLEDWidth / config.pixelPerX;
             int JUMP_Y = videoCaptureHeight / config.pixelPerY;
 
+            //Cather the color values of pixels
             for (int i = 0; i < videoCaptureLEDWidth; i += JUMP_X)
             {
                 for (int j = 0; j < videoCaptureHeight; j += JUMP_Y)
@@ -508,11 +543,25 @@ namespace Ambilight
                 }
             }
 
+            //Assign the mean of those values
             sendColor = Color.FromArgb(red / counter, green / counter, blue / counter);
+        }
+        private int addBrightness(int value)
+        {
+            //Create a new variable from the input value multiplied with the brightness
+            int newValue = value * config.brightness / 100;
+
+            if (newValue > 255)
+            {
+                //Since a color value can't be over 255 we have to cap it
+                newValue = 255;
+            }
+
+            return newValue;
         }
         #endregion
 
-        //Exit code
+        #region Exit code
         private void exitApplication()
         {
             //Write current settings to XML
@@ -537,6 +586,7 @@ namespace Ambilight
             backgroundWorkerColor.CancelAsync();
             backgroundWorkerColor.Dispose();
 
+            //Close all forms
             videoForm.Close();
             colorForm.Close();
 
@@ -546,9 +596,10 @@ namespace Ambilight
             //Close port
             if (port.IsOpen)
                 port.Dispose();
-            
+
             //Close the application
             Application.Exit();
         }
+        #endregion
     }
 }
