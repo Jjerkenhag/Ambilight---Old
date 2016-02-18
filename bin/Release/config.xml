@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <root>
   <Settings>
-    <Port>COM9</Port>
+    <Port>COM11</Port>
     <!-- The port of which the Arduino has its input, the program won't start if this is wrong -->
     
     <Baud>115200</Baud>

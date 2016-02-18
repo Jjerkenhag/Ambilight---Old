@@ -39,7 +39,7 @@ namespace Ambilight
         int red, green, blue, counter; //This if for calculating the average value.
 
         int videoCaptureHeight = 1; //The height of which to capture video, this variable will be updated by itself
-        int videoCaptureWidth = Screen.PrimaryScreen.Bounds.Width; //The width of the area of which to capture video
+        int videoCaptureWidth = Screen.PrimaryScreen.Bounds.Width + 1100; //The width of the area of which to capture video
         int videoCaptureLEDWidth = 1; //The width of each LED, this too will update itself
         int offsetFromLeft = 0; //The offset from the left side of your screen, good if your strip is shorter than the width of your screen
 
@@ -550,13 +550,11 @@ namespace Ambilight
         {
             //Create a new variable from the input value multiplied with the brightness
             int newValue = value * config.brightness / 100;
-
             if (newValue > 255)
             {
                 //Since a color value can't be over 255 we have to cap it
                 newValue = 255;
             }
-
             return newValue;
         }
         #endregion
