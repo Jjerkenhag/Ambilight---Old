@@ -5,7 +5,7 @@
 
 #define PIN 2 // Output pin on the Arduino
 #define NUM_LEDS 30 // The amount of LEDs used
-#define STRIP 60 // The amount of LEDs on the strip
+#define STRIP 30 // The amount of LEDs on the strip
 
 #define BAUD 115200 // This is the baud rate of which the program communicate with the Arduino
   
@@ -51,7 +51,7 @@ void loop() {
         for(int i = 0; i < NUM_LEDS; i++) // Go through each LED and set its color
         {
           colorplace = i * 3 + 1; // Calculate the position of each value
-          strip.setPixelColor(59 - (i * 2), color[colorplace], color[colorplace + 1], color[colorplace + 2]); // Set pixel(place, red, green, blue)
+          strip.setPixelColor(29 - i, color[colorplace], color[colorplace + 1], color[colorplace + 2]); // Set pixel(place, red, green, blue)
         }
         strip.show(); // Update the strip
         placeAt = 0; // Set the placement to zero for next message to be received

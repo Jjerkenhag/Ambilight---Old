@@ -23,10 +23,13 @@ namespace Ambilight
         public byte greenAmount { get; set; }
         public byte blueAmount { get; set;}
         public bool running { get; set; }
-
+        public int delay { get; set; }
         public mode currentMode { get; set; }
+        public ambient ambientMode { get; set; }
 
         public enum mode { video, audio, color, ambient}
+
+        public enum ambient { fade, blink, swirl}
 
         public void setConfiguration(string po, int ba, int numLed, int os, int he, int ppX, int ppY, int br, int ex, bool lc, bool off, string cm, byte r, byte g, byte b, bool ru)
         {
@@ -42,10 +45,12 @@ namespace Ambilight
             linearCapture = lc;
             turnOffWhenClosed = off;
             currentMode = (mode) Enum.Parse(typeof(mode), cm, true);
+            ambientMode = (ambient)Enum.Parse(typeof(ambient), "swirl", true);
             redAmount = r;
             greenAmount = g;
             blueAmount = b;
             running = ru;
+            delay = 0;
         }
         public void setDefaultConfiguration()
         {
@@ -61,9 +66,11 @@ namespace Ambilight
             linearCapture = false;
             turnOffWhenClosed = true;
             currentMode = mode.video;
+            ambientMode = ambient.swirl;
             redAmount = 0;
             greenAmount = 0;
             blueAmount = 0;
+            delay = 0;
         }
     }
 }

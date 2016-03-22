@@ -46,6 +46,8 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.backgroundWorkerVideo = new System.ComponentModel.BackgroundWorker();
             this.backgroundWorkerColor = new System.ComponentModel.BackgroundWorker();
+            this.backgroundWorkerAudio = new System.ComponentModel.BackgroundWorker();
+            this.backgroundWorkerAmbient = new System.ComponentModel.BackgroundWorker();
             this.contextMenuStripIcon.SuspendLayout();
             this.menuStripAmbilight.SuspendLayout();
             this.SuspendLayout();
@@ -183,6 +185,16 @@
             this.backgroundWorkerColor.WorkerSupportsCancellation = true;
             this.backgroundWorkerColor.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerColor_DoWork);
             // 
+            // backgroundWorkerAudio
+            // 
+            this.backgroundWorkerAudio.WorkerSupportsCancellation = true;
+            this.backgroundWorkerAudio.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerAudio_DoWork);
+            // 
+            // backgroundWorkerAmbient
+            // 
+            this.backgroundWorkerAmbient.WorkerSupportsCancellation = true;
+            this.backgroundWorkerAmbient.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerAmbient_DoWork);
+            // 
             // Ambilight
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(17F, 38F);
@@ -215,20 +227,22 @@
 
         private System.Windows.Forms.NotifyIcon notifyIconAmbilight;
         private System.ComponentModel.BackgroundWorker backgroundWorkerDataSender;
+        private System.ComponentModel.BackgroundWorker backgroundWorkerVideo;
+        private System.ComponentModel.BackgroundWorker backgroundWorkerAudio;
+        private System.ComponentModel.BackgroundWorker backgroundWorkerColor;
+        private System.ComponentModel.BackgroundWorker backgroundWorkerAmbient;
         private System.Windows.Forms.Label labelSenderSpeed;
         private System.Windows.Forms.MenuStrip menuStripAmbilight;
         private System.Windows.Forms.ToolStripMenuItem videoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem audioToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem colorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ambientToolStripMenuItem;
-        private System.ComponentModel.BackgroundWorker backgroundWorkerVideo;
         private System.Windows.Forms.ToolStripMenuItem startStopToolStripMenuItem;
-        private System.ComponentModel.BackgroundWorker backgroundWorkerColor;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStripIcon;
         private System.Windows.Forms.ToolStripMenuItem minimizeToolStripMenuIconItem;
         private System.Windows.Forms.ToolStripMenuItem startStopToolStripMenuIconItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuIconItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStripIcon;
     }
 }
 

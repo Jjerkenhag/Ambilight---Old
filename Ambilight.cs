@@ -21,7 +21,9 @@ namespace Ambilight
         SerialPort port;
 
         VideoForm videoForm;
+        AudioForm audioForm;
         ColorForm colorForm;
+        AmbientForm ambientForm;
 
         //UPS : Updates Per Second
         DateTime lastTime = DateTime.Now; //Time since last update of label
@@ -39,7 +41,7 @@ namespace Ambilight
         int red, green, blue, counter; //This if for calculating the average value.
 
         int videoCaptureHeight = 1; //The height of which to capture video, this variable will be updated by itself
-        int videoCaptureWidth = Screen.PrimaryScreen.Bounds.Width + 1100; //The width of the area of which to capture video
+        int videoCaptureWidth = Screen.PrimaryScreen.Bounds.Width + 0; //The width of the area of which to capture video
         int videoCaptureLEDWidth = 1; //The width of each LED, this too will update itself
         int offsetFromLeft = 0; //The offset from the left side of your screen, good if your strip is shorter than the width of your screen
 
@@ -56,7 +58,9 @@ namespace Ambilight
         {
             //All the control windows
             videoForm = new VideoForm(config);
+            audioForm = new AudioForm(config);
             colorForm = new ColorForm(config);
+            ambientForm = new AmbientForm(config);
 
             //Makes our life easier with the multithreading
             Control.CheckForIllegalCrossThreadCalls = false;
@@ -81,26 +85,36 @@ namespace Ambilight
             //Start all the background workers
             backgroundWorkerDataSender.RunWorkerAsync();
             backgroundWorkerVideo.RunWorkerAsync();
+            backgroundWorkerAudio.RunWorkerAsync();
             backgroundWorkerColor.RunWorkerAsync();
+            backgroundWorkerAmbient.RunWorkerAsync();
 
             //Initiate all child forms
             this.IsMdiContainer = true;
-
-            videoForm.MdiParent = this;
-            colorForm.MdiParent = this;
+            videoForm.MdiParent = audioForm.MdiParent = colorForm.MdiParent = ambientForm.MdiParent = this;
 
             colorForm.BackColor = Color.FromArgb(config.redAmount, config.greenAmount, config.blueAmount);
 
             //Open the form corresponding to the mode
+            if (config.currentMode == Settings.mode.video)
+            {
+                currentForm = videoForm;
+                videoForm.Show();
+            }
+            if (config.currentMode == Settings.mode.audio)
+            {
+                currentForm = audioForm;
+                audioForm.Show();
+            }
             if (config.currentMode == Settings.mode.color)
             {
                 currentForm = colorForm;
                 colorForm.Show();
             }
-            if (config.currentMode == Settings.mode.video)
+            if (config.currentMode == Settings.mode.ambient)
             {
-                currentForm = videoForm;
-                videoForm.Show();
+                currentForm = ambientForm;
+                ambientForm.Show();
             }
         }
         private void Ambilight_FormClosing(object sender, FormClosingEventArgs e)
@@ -220,7 +234,13 @@ namespace Ambilight
         }
         private void audioToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //Does nothing right now
+            if (config.currentMode != Settings.mode.audio) //If current mode is same, do nothing
+            {
+                currentForm.Hide(); //Hide the current form
+                audioForm.Show(); //Show new form
+                currentForm = audioForm; //Set currentForm to the new form
+                config.currentMode = Settings.mode.audio; //Set current mode to new mode
+            }
         }
         private void colorToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -235,7 +255,13 @@ namespace Ambilight
         }
         private void ambientToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //Does nothing right now
+            if (config.currentMode != Settings.mode.ambient) //If current mode is same, do nothing
+            {
+                currentForm.Hide(); //Hide the current form
+                ambientForm.Show(); //Show new form
+                currentForm = ambientForm; //Set currentForm to the new form
+                config.currentMode = Settings.mode.ambient; //Set current mode to new mode
+            }
         }
         private void startStopToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -348,70 +374,6 @@ namespace Ambilight
                     }
                 }
             }
-        }
-        #endregion
-
-        #region Color code
-        private void backgroundWorkerColor_DoWork(object sender, DoWorkEventArgs e)
-        {
-            while (true)
-            {
-                if (backgroundWorkerColor.CancellationPending)
-                {
-                    //If cancellation is activated, this will run
-                    e.Cancel = true;
-                    return;
-                }
-                else
-                {
-                    if (config.currentMode == Settings.mode.color && config.running == true && paused == false)
-                    {
-                        System.Threading.Thread.Sleep(100);
-
-                        if (lastRed != config.redAmount || lastGreen != config.greenAmount || lastBlue != config.blueAmount)
-                        {
-                            //Update background color
-                            colorForm.BackColor = Color.FromArgb(config.redAmount, config.greenAmount, config.blueAmount);
-
-                            //Update all color values
-                            lastRed = config.redAmount;
-                            lastGreen = config.greenAmount;
-                            lastBlue = config.blueAmount;
-
-                            if (readyToSendData == false)
-                            {
-                                packageData[placeAt++] = Convert.ToByte('a'); //Place start byte
-
-                                for (int i = 0; i < config.numberOfLeds; i++)
-                                {
-                                    //Place all color values
-                                    packageData[placeAt++] = lastRed;
-                                    packageData[placeAt++] = lastGreen;
-                                    packageData[placeAt++] = lastBlue;
-                                }
-
-                                placeAt = 0;
-                                readyToSendData = true; //Set to true to activate data sender
-                            }
-                        }
-                    }
-                    else
-                    {
-                        //If current mode is not color, this thread will sleep half a second
-                        System.Threading.Thread.Sleep(500);
-                    }
-                }
-            }
-        }
-        private void sendAllBlack()
-        {
-            //Set start byte and fill rest with black
-            packageData[0] = Convert.ToByte('a');
-            for (int i = 0; i < config.numberOfLeds * 3; i++)
-            {
-                packageData[i + 1] = Convert.ToByte(0);
-            }
-            readyToSendData = true;
         }
         #endregion
 
@@ -546,6 +508,7 @@ namespace Ambilight
             //Assign the mean of those values
             sendColor = Color.FromArgb(red / counter, green / counter, blue / counter);
         }
+
         private int addBrightness(int value)
         {
             //Create a new variable from the input value multiplied with the brightness
@@ -556,6 +519,166 @@ namespace Ambilight
                 newValue = 255;
             }
             return newValue;
+        }
+        #endregion
+
+        #region Audio code
+        private void backgroundWorkerAudio_DoWork(object sender, DoWorkEventArgs e)
+        {
+            while (true)
+            {
+                if (backgroundWorkerAudio.CancellationPending)
+                {
+                    //If cancellation is activated, this will run
+                    e.Cancel = true;
+                    return;
+                }
+                else
+                {
+                    if (config.currentMode == Settings.mode.audio && config.running == true)
+                    {
+                        if (readyToSendData == false)
+                        {
+                            Bitmap bmpScreenshot = Screenshot(); //Take a picture of capture area
+                            packageData[placeAt++] = Convert.ToByte('a'); //Set starting byte
+
+                            for (int i = 0; i < config.numberOfLeds; i++)
+                            {
+                                //Use the chosen mode of color calculation
+                                if (config.linearCapture)
+                                    findMeanColorLinear(i, bmpScreenshot);
+                                else
+                                    findMeanColorEqual(i, bmpScreenshot);
+
+                                //Add brightness to the value, convert to byte and add to the package
+                                packageData[placeAt++] = Convert.ToByte(addBrightness(sendColor.R));
+                                packageData[placeAt++] = Convert.ToByte(addBrightness(sendColor.G));
+                                packageData[placeAt++] = Convert.ToByte(addBrightness(sendColor.B));
+                            }
+
+                            placeAt = 0;
+                            readyToSendData = true; //Set to true to activate data sender
+                        }
+                    }
+                    else
+                    {
+                        //If current mode is not color, this thread will sleep half a second
+                        System.Threading.Thread.Sleep(500);
+                    }
+                }
+            }
+        }
+        #endregion
+
+        #region Color code
+        private void backgroundWorkerColor_DoWork(object sender, DoWorkEventArgs e)
+        {
+            while (true)
+            {
+                if (backgroundWorkerColor.CancellationPending)
+                {
+                    //If cancellation is activated, this will run
+                    e.Cancel = true;
+                    return;
+                }
+                else
+                {
+                    if (config.currentMode == Settings.mode.color && config.running == true && paused == false)
+                    {
+                        System.Threading.Thread.Sleep(100);
+
+                        if (lastRed != config.redAmount || lastGreen != config.greenAmount || lastBlue != config.blueAmount)
+                        {
+                            //Update background color
+                            colorForm.BackColor = Color.FromArgb(config.redAmount, config.greenAmount, config.blueAmount);
+
+                            //Update all color values
+                            lastRed = config.redAmount;
+                            lastGreen = config.greenAmount;
+                            lastBlue = config.blueAmount;
+
+                            if (readyToSendData == false)
+                            {
+                                packageData[placeAt++] = Convert.ToByte('a'); //Place start byte
+
+                                for (int i = 0; i < config.numberOfLeds; i++)
+                                {
+                                    //Place all color values
+                                    packageData[placeAt++] = lastRed;
+                                    packageData[placeAt++] = lastGreen;
+                                    packageData[placeAt++] = lastBlue;
+                                }
+
+                                placeAt = 0;
+                                readyToSendData = true; //Set to true to activate data sender
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //If current mode is not color, this thread will sleep half a second
+                        System.Threading.Thread.Sleep(500);
+                    }
+                }
+            }
+        }
+        private void sendAllBlack()
+        {
+            //Set start byte and fill rest with black
+            packageData[0] = Convert.ToByte('a');
+            for (int i = 0; i < config.numberOfLeds * 3; i++)
+            {
+                packageData[i + 1] = Convert.ToByte(0);
+            }
+            readyToSendData = true;
+        }
+        #endregion
+
+        #region Ambient code
+        private void backgroundWorkerAmbient_DoWork(object sender, DoWorkEventArgs e)
+        {
+            while (true)
+            {
+                if (backgroundWorkerAmbient.CancellationPending)
+                {
+                    //If cancellation is activated, this will run
+                    e.Cancel = true;
+                    return;
+                }
+                else
+                {
+                    if (config.currentMode == Settings.mode.ambient && config.running == true)
+                    {
+                        if (readyToSendData == false)
+                        {
+                            Bitmap bmpScreenshot = Screenshot(); //Take a picture of capture area
+                            packageData[placeAt++] = Convert.ToByte('a'); //Set starting byte
+
+                            for (int i = 0; i < config.numberOfLeds; i++)
+                            {
+                                //Use the chosen mode of color calculation
+                                if (config.linearCapture)
+                                    findMeanColorLinear(i, bmpScreenshot);
+                                else
+                                    findMeanColorEqual(i, bmpScreenshot);
+
+                                //Add brightness to the value, convert to byte and add to the package
+                                packageData[placeAt++] = Convert.ToByte(addBrightness(sendColor.R));
+                                packageData[placeAt++] = Convert.ToByte(addBrightness(sendColor.G));
+                                packageData[placeAt++] = Convert.ToByte(addBrightness(sendColor.B));
+                            }
+
+                            placeAt = 0;
+                            readyToSendData = true; //Set to true to activate data sender
+                        }
+                    }
+                    else
+                    {
+                        //If current mode is not color, this thread will sleep half a second
+                        System.Threading.Thread.Sleep(500);
+                    }
+                }
+            }
         }
         #endregion
 

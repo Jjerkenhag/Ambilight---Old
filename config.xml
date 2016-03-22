@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <root>
   <Settings>
-    <Port>COM11</Port>
+    <Port>COM26</Port>
     <!-- The port of which the Arduino has its input, the program won't start if this is wrong -->
     
     <Baud>115200</Baud>
@@ -16,10 +16,10 @@
     <Height>3</Height>
     <!-- 1/X where this number will represent X as in the portion of the screen to capture in height -->
     
-    <PixelPerX>25</PixelPerX>
+    <PixelPerX>20</PixelPerX>
     <!-- The amount of pixels to sample for each LED in width -->
     
-    <PixelPerY>25</PixelPerY> 
+    <PixelPerY>20</PixelPerY> 
     <!-- The amount of pixels to sample for each LED in height -->
     
     <Brightness>100</Brightness>

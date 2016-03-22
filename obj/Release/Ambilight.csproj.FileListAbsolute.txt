@@ -10,3 +10,5 @@ C:\Users\Joakim Jerkenhag\Documents\Visual Studio 2015\Projects\Ambilight\obj\Re
 C:\Users\Joakim Jerkenhag\Documents\Visual Studio 2015\Projects\Ambilight\obj\Release\Ambilight.csproj.GenerateResource.Cache
 C:\Users\Joakim Jerkenhag\Documents\Visual Studio 2015\Projects\Ambilight\obj\Release\Ambilight.exe
 C:\Users\Joakim Jerkenhag\Documents\Visual Studio 2015\Projects\Ambilight\obj\Release\Ambilight.pdb
+C:\Users\Joakim Jerkenhag\Documents\Visual Studio 2015\Projects\Ambilight\obj\Release\Ambilight.AmbientForm.resources
+C:\Users\Joakim Jerkenhag\Documents\Visual Studio 2015\Projects\Ambilight\obj\Release\Ambilight.AudioForm.resources

@@ -69,11 +69,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AmbientForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AmbientForm.Designer.cs">
+      <DependentUpon>AmbientForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Ambilight.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Ambilight.Designer.cs">
       <DependentUpon>Ambilight.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AudioForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AudioForm.Designer.cs">
+      <DependentUpon>AudioForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ColorForm.cs">
       <SubType>Form</SubType>
@@ -90,8 +102,14 @@
     <Compile Include="VideoForm.Designer.cs">
       <DependentUpon>VideoForm.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="AmbientForm.resx">
+      <DependentUpon>AmbientForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Ambilight.resx">
       <DependentUpon>Ambilight.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AudioForm.resx">
+      <DependentUpon>AudioForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ColorForm.resx">
       <DependentUpon>ColorForm.cs</DependentUpon>
