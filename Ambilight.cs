@@ -394,25 +394,29 @@ namespace Ambilight
                     {
                         if (readyToSendData == false)
                         {
-                            Bitmap bmpScreenshot = Screenshot(); //Take a picture of capture area
-                            packageData[placeAt++] = Convert.ToByte('a'); //Set starting byte
-
-                            for (int i = 0; i < config.numberOfLeds; i++)
+                            try
                             {
-                                //Use the chosen mode of color calculation
-                                if (config.linearCapture)
-                                    findMeanColorLinear(i, bmpScreenshot);
-                                else
-                                    findMeanColorEqual(i, bmpScreenshot);
+                                Bitmap bmpScreenshot = Screenshot(); //Take a picture of capture area
+                                packageData[placeAt++] = Convert.ToByte('a'); //Set starting byte
 
-                                //Add brightness to the value, convert to byte and add to the package
-                                packageData[placeAt++] = Convert.ToByte(addBrightness(sendColor.R));
-                                packageData[placeAt++] = Convert.ToByte(addBrightness(sendColor.G));
-                                packageData[placeAt++] = Convert.ToByte(addBrightness(sendColor.B));
+                                for (int i = 0; i < config.numberOfLeds; i++)
+                                {
+                                    //Use the chosen mode of color calculation
+                                    if (config.linearCapture)
+                                        findMeanColorLinear(i, bmpScreenshot);
+                                    else
+                                        findMeanColorEqual(i, bmpScreenshot);
+
+                                    //Add brightness to the value, convert to byte and add to the package
+                                    packageData[placeAt++] = Convert.ToByte(addBrightness(sendColor.R));
+                                    packageData[placeAt++] = Convert.ToByte(addBrightness(sendColor.G));
+                                    packageData[placeAt++] = Convert.ToByte(addBrightness(sendColor.B));
+                                }
+
+                                placeAt = 0;
+                                readyToSendData = true; //Set to true to activate data sender
                             }
-
-                            placeAt = 0;
-                            readyToSendData = true; //Set to true to activate data sender
+                            catch { }
                         }
                     }
                     else
