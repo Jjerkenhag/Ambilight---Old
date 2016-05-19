@@ -25,6 +25,8 @@ namespace Ambilight
         ColorForm colorForm;
         AmbientForm ambientForm;
 
+        Bitmap bmpScreenshot;
+
         //UPS : Updates Per Second
         DateTime lastTime = DateTime.Now; //Time since last update of label
         int loop = 0; //Number of updates last second
@@ -41,11 +43,13 @@ namespace Ambilight
         int red, green, blue, counter; //This if for calculating the average value.
 
         int videoCaptureHeight = 1; //The height of which to capture video, this variable will be updated by itself
-        int videoCaptureWidth = Screen.PrimaryScreen.Bounds.Width + 0; //The width of the area of which to capture video
+        int videoCaptureWidth = Screen.PrimaryScreen.Bounds.Width + 1100; //The width of the area of which to capture video
         int videoCaptureLEDWidth = 1; //The width of each LED, this too will update itself
         int offsetFromLeft = 0; //The offset from the left side of your screen, good if your strip is shorter than the width of your screen
 
         byte lastRed = 0, lastGreen = 0, lastBlue = 0; //This is used for the update of the color mode
+
+        Color getColor = new Color(); //Put this here to avoid creating one for every LED
 
         Form currentForm; //Keeps track on what window/form to show
 
@@ -431,7 +435,7 @@ namespace Ambilight
         {
             videoCaptureHeight = Screen.PrimaryScreen.Bounds.Height / config.height; //To update the capture portion.
 
-            Bitmap bmpScreenshot = new Bitmap(videoCaptureWidth, videoCaptureHeight); //Create new bitmap with appropriate size
+            bmpScreenshot = new Bitmap(videoCaptureWidth, videoCaptureHeight); //Create new bitmap with appropriate size
 
             Graphics g = Graphics.FromImage(bmpScreenshot); //Create graphics from bitmap
 
@@ -444,7 +448,6 @@ namespace Ambilight
         private void findMeanColorEqual(int forLed, Bitmap fromBmp)
         {
             //Gather pixels for each LED and calculate mean color
-            Color getColor = new Color();
             red = 0;
             green = 0;
             blue = 0;
@@ -457,12 +460,15 @@ namespace Ambilight
             int JUMP_X = videoCaptureLEDWidth / config.pixelPerX;
             int JUMP_Y = videoCaptureHeight / config.pixelPerY;
 
+            //Get the x of where to start gathering
+            int beginAtX = forLed * videoCaptureLEDWidth;
+
             //Cather the color values of pixels
             for (int i = 0; i < videoCaptureLEDWidth; i += JUMP_X)
             {
                 for (int j = 0; j < videoCaptureHeight; j += JUMP_Y)
                 {
-                    getColor = fromBmp.GetPixel(i + forLed * videoCaptureLEDWidth, j);
+                    getColor = fromBmp.GetPixel(beginAtX + i, j);
 
                     red += getColor.R;
                     green += getColor.G;
@@ -478,7 +484,6 @@ namespace Ambilight
         private void findMeanColorLinear(int forLed, Bitmap fromBmp)
         {
             //Gather pixels for each LED and calculate mean color
-            Color getColor = new Color();
             red = 0;
             green = 0;
             blue = 0;
@@ -491,12 +496,15 @@ namespace Ambilight
             int JUMP_X = videoCaptureLEDWidth / config.pixelPerX;
             int JUMP_Y = videoCaptureHeight / config.pixelPerY;
 
+            //Get the x of where to start gathering
+            int beginAtX = forLed * videoCaptureLEDWidth;
+
             //Cather the color values of pixels
             for (int i = 0; i < videoCaptureLEDWidth; i += JUMP_X)
             {
                 for (int j = 0; j < videoCaptureHeight; j += JUMP_Y)
                 {
-                    getColor = fromBmp.GetPixel(i + forLed * videoCaptureLEDWidth, j);
+                    getColor = fromBmp.GetPixel(beginAtX + i, j);
 
                     //This "algorithm" gives pixels further from the top less influence on final color
                     int log = ((videoCaptureHeight - j) * 100) / videoCaptureHeight;
