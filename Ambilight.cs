@@ -26,6 +26,8 @@ namespace Ambilight
         AmbientForm ambientForm;
 
         Bitmap bmpScreenshot;
+        Graphics g;
+        Size s;
 
         //UPS : Updates Per Second
         DateTime lastTime = DateTime.Now; //Time since last update of label
@@ -400,7 +402,7 @@ namespace Ambilight
                         {
                             try
                             {
-                                Bitmap bmpScreenshot = Screenshot(); //Take a picture of capture area
+                                Screenshot(); //Take a picture of capture area
                                 packageData[placeAt++] = Convert.ToByte('a'); //Set starting byte
 
                                 for (int i = 0; i < config.numberOfLeds; i++)
@@ -431,19 +433,17 @@ namespace Ambilight
                 }
             }
         }
-        private Bitmap Screenshot()
+        private void Screenshot()
         {
             videoCaptureHeight = Screen.PrimaryScreen.Bounds.Height / config.height; //To update the capture portion.
 
             bmpScreenshot = new Bitmap(videoCaptureWidth, videoCaptureHeight); //Create new bitmap with appropriate size
 
-            Graphics g = Graphics.FromImage(bmpScreenshot); //Create graphics from bitmap
+            g = Graphics.FromImage(bmpScreenshot); //Create graphics from bitmap
 
-            Size s = new Size(videoCaptureWidth, videoCaptureHeight); //Set the size of capture area
+            s = new Size(videoCaptureWidth, videoCaptureHeight); //Set the size of capture area
 
             g.CopyFromScreen(offsetFromLeft, config.offset, 0, 0, s); //Take picture of screen and put into graphics
-
-            return bmpScreenshot;
         }
         private void findMeanColorEqual(int forLed, Bitmap fromBmp)
         {
@@ -551,7 +551,7 @@ namespace Ambilight
                     {
                         if (readyToSendData == false)
                         {
-                            Bitmap bmpScreenshot = Screenshot(); //Take a picture of capture area
+                            Screenshot(); //Take a picture of capture area
                             packageData[placeAt++] = Convert.ToByte('a'); //Set starting byte
 
                             for (int i = 0; i < config.numberOfLeds; i++)
@@ -663,7 +663,7 @@ namespace Ambilight
                     {
                         if (readyToSendData == false)
                         {
-                            Bitmap bmpScreenshot = Screenshot(); //Take a picture of capture area
+                            Screenshot(); //Take a picture of capture area
                             packageData[placeAt++] = Convert.ToByte('a'); //Set starting byte
 
                             for (int i = 0; i < config.numberOfLeds; i++)
